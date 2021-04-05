@@ -13,7 +13,7 @@ class RelayPosition(enum.Enum):
 class Relay:
     def __init__(self, name, controlPin):
         self.name = name
-        self.controlPin = gpiozero.OutputDevice(controlPin, active_high=False, initial_value=False)
+        self.controlPin = gpiozero.OutputDevice(controlPin, active_high=True, initial_value=False)
         self.position = RelayPosition.OPEN
 
     def setRelay(self, position):
