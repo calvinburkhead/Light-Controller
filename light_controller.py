@@ -1,4 +1,6 @@
-import datetime, enum, gpiozero
+import datetime, enum, RPi.GPIO as GPIO
+
+GPIO.setmode(GPIO.BCM) # GPIO Numbers instead of board numbers
 
 # Light controller operates in two modes. Day Mode and Night Mode.
 # Day Mode:
@@ -11,17 +13,19 @@ class RelayPosition(enum.Enum):
     CLOSED = True
 
 class Relay:
-    def __init__(self, name, controlPin):
+    def __init__(self, name, gpioPin):
         self.name = name
-        self.controlPin = gpiozero.OutputDevice(controlPin, active_high=True, initial_value=False)
+        self.gpioPin = gpioPin
+        GPIO.setup(self.gpioPin, GPIO.OUT)
         self.position = RelayPosition.OPEN
+        
 
     def setRelay(self, position):
         if position != self.position:
             if position is RelayPosition.OPEN:
-                self.controlPin.off()
+                GPIO.output(self.gpioPin, GPIO.LOW)
             if position is RelayPosition.CLOSED:
-                self.controlPin.on()
+                GPIO.output(self.gpioPin, GPIO.HIGH)
 
 # Define Relays
 # R1 controlls the red and white LED strips
