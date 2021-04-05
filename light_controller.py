@@ -12,7 +12,7 @@ class Relay(enum.Enum):
 
 # Define Schedule
 class LightControllerSchedule:
-    def __init__(self, scheduleName, startTime, endTime, r1, r2, r3):
+    def __init__(self,scheduleName, startTime, endTime, r1, r2, r3):
         self.scheduleName = scheduleName
         self.startTime = startTime
         self.endTime = endTime
@@ -23,10 +23,18 @@ class LightControllerSchedule:
     
     def scheduleActive(self):
         currentTime = self.getCurrentTime()
-        if currentTime >= self.startTime and currentTime < self.endTime:
-            return True
+        # Interday schedule
+        if self.startTime < self.endTime:
+            if currentTime >= self.startTime and currentTime < self.endTime:
+                return True
+            else:
+                return False
+        # Indtraday schedule
         else:
-            return False
+            if currentTime >= self.startTime or currentTime < self.endTime:
+                return True
+            else:
+                return False
 
     def getCurrentTime(self):
         if self.currentTime is None:
@@ -50,7 +58,10 @@ for schedule in schedules:
     if schedule.scheduleActive():
         selectedSchedule = schedule
 
-print("Selected schedule:\t" + selectedSchedule.scheduleName)
-print("Set relay 1:\t " + str(selectedSchedule.r1))
-print("Set relay 2:\t " + str(selectedSchedule.r2))
-print("Set relay 3:\t " + str(selectedSchedule.r3))
+if selectedSchedule is not None:
+    print("Selected schedule:\t" + selectedSchedule.scheduleName)
+    print("Set relay 1:\t " + str(selectedSchedule.r1))
+    print("Set relay 2:\t " + str(selectedSchedule.r2))
+    print("Set relay 3:\t " + str(selectedSchedule.r3))
+else:
+    print("No schedule is active at this time.")
