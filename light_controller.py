@@ -1,4 +1,4 @@
-import datetime, enum
+import datetime, enum, gpiozero
 
 # Light controller operates in two modes. Day Mode and Night Mode.
 # Day Mode:
@@ -6,9 +6,31 @@ import datetime, enum
 # Night Mode:
 #   In Night Mode the light controller will open relays 1 and 3 and will close relay 2.
 
-class Relay(enum.Enum):
+class RelayPosition(enum.Enum):
     OPEN = False
     CLOSED = True
+
+class Relay:
+    def __init__(self, name, controlPin):
+        self.name = name
+        self.controlPin = gpiozero.OutputDevice(controlPin, active_high=False, initial_value=False)
+        self.position = RelayPosition.OPEN
+
+    def setRelay(self, position):
+        if position != self.position:
+            if position is RelayPosition.OPEN:
+                self.controlPin.off()
+            if position is RelayPosition.CLOSED:
+                self.controlPin.on()
+
+# Define Relays
+# R1 controlls the red and white LED strips
+# R2 controlls the blue LED strips
+# R3 controlls the Fluorescent tubes
+
+r1 = Relay("Red + White LEDs", 26)
+r2 = Relay("Blue LEDs", 20)
+r3 = Relay("Fluorescent Tubes", 21)
 
 # Define Schedule
 class LightControllerSchedule:
@@ -61,7 +83,13 @@ for schedule in schedules:
 if selectedSchedule is not None:
     print("Selected schedule:\t" + selectedSchedule.scheduleName)
     print("Set relay 1:\t " + str(selectedSchedule.r1))
+    r1.setRelay(selectedSchedule.r1)
     print("Set relay 2:\t " + str(selectedSchedule.r2))
+    r2.setRelay(selectedSchedule.r2)
     print("Set relay 3:\t " + str(selectedSchedule.r3))
+    r3.setRelay(selectedSchedule.r3)
 else:
     print("No schedule is active at this time.")
+    r1.setRelay(RelayPosition.OPEN)
+    r2.setRelay(RelayPosition.OPEN)
+    r3.setRelay(RelayPosition.OPEN)
