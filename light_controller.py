@@ -23,13 +23,13 @@ class LightControllerSchedule:
     
     def scheduleActive(self):
         currentTime = self.getCurrentTime()
-        # Interday schedule
+        # Intraday schedule
         if self.startTime < self.endTime:
             if currentTime >= self.startTime and currentTime < self.endTime:
                 return True
             else:
                 return False
-        # Indtraday schedule
+        # Interday (Overnight) schedule
         else:
             if currentTime >= self.startTime or currentTime < self.endTime:
                 return True
