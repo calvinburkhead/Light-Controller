@@ -21,7 +21,7 @@ class Relay:
         
 
     def setRelay(self, position):
-        if position != self.position:
+        if position.value is not self.position:
             if position is RelayPosition.OPEN:
                 GPIO.output(self.gpioPin, GPIO.LOW)
             if position is RelayPosition.CLOSED:
