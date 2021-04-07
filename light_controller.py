@@ -74,8 +74,8 @@ class LightControllerSchedule:
 
 # Caution, there is no protection against overlapping schedules.
 # Schedules are processed in order so in the event of an overlap condition the last matching schedule will be applied.
-schedules = [ LightControllerSchedule("Day Mode", 800, 1859, RelayPosition.CLOSED, RelayPosition.OPEN, RelayPosition.CLOSED),
-              LightControllerSchedule("Night Mode", 1900, 759, RelayPosition.OPEN, RelayPosition.CLOSED, RelayPosition.OPEN)]
+schedules = [ LightControllerSchedule("Day Mode", 700, 1859, RelayPosition.CLOSED, RelayPosition.OPEN, RelayPosition.CLOSED),
+              LightControllerSchedule("Night Mode", 1900, 659, RelayPosition.OPEN, RelayPosition.CLOSED, RelayPosition.OPEN)]
 
 def applySchedule(schedules):
     selectedSchedule = None
