@@ -1,6 +1,6 @@
 import datetime, enum, RPi.GPIO as GPIO
 
-GPIO.setmode(GPIO.BCM) # GPIO Numbers instead of board numbers
+#GPIO.setmode(GPIO.BCM) # GPIO Numbers instead of board numbers
 
 # Light controller operates in two modes. Day Mode and Night Mode.
 # Day Mode:
@@ -67,33 +67,70 @@ class LightControllerSchedule:
             self.setCurrentTime()
         return self.currentTime
             
-    def setCurrentTime(self):
-        currentTime = datetime.datetime.now()
-        self.currentTime = int(str(currentTime.hour) + str(currentTime.minute))
+    def setCurrentTime(self, currentTime = None):
+        if currentTime is None:
+            currentTime = datetime.datetime.now()
+        self.currentTime = int(currentTime.strftime("%H%M"))
 
 # Caution, there is no protection against overlapping schedules.
 # Schedules are processed in order so in the event of an overlap condition the last matching schedule will be applied.
 schedules = [ LightControllerSchedule("Day Mode", 800, 1859, RelayPosition.CLOSED, RelayPosition.OPEN, RelayPosition.CLOSED),
               LightControllerSchedule("Night Mode", 1900, 759, RelayPosition.OPEN, RelayPosition.CLOSED, RelayPosition.OPEN)]
 
-selectedSchedule = None
-for schedule in schedules:
-    print("Schedule Name:\t" + schedule.scheduleName)
-    print(" Active:\t" + str(schedule.scheduleActive()))
-    
-    if schedule.scheduleActive():
-        selectedSchedule = schedule
+def applySchedule(schedules):
+    selectedSchedule = None
+    for schedule in schedules:
+        print("Schedule Name:\t" + schedule.scheduleName)
+        print(" Active:\t" + str(schedule.scheduleActive()))
+        
+        if schedule.scheduleActive():
+            selectedSchedule = schedule
 
-if selectedSchedule is not None:
-    print("Selected schedule:\t" + selectedSchedule.scheduleName)
-    print("Set relay 1:\t " + str(selectedSchedule.r1))
-    r1.setRelay(selectedSchedule.r1)
-    print("Set relay 2:\t " + str(selectedSchedule.r2))
-    r2.setRelay(selectedSchedule.r2)
-    print("Set relay 3:\t " + str(selectedSchedule.r3))
-    r3.setRelay(selectedSchedule.r3)
-else:
-    print("No schedule is active at this time.")
-    r1.setRelay(RelayPosition.OPEN)
-    r2.setRelay(RelayPosition.OPEN)
-    r3.setRelay(RelayPosition.OPEN)
+    if selectedSchedule is not None:
+        print("Selected schedule:\t" + selectedSchedule.scheduleName)
+        print("Set relay 1:\t " + str(selectedSchedule.r1))
+        r1.setRelay(selectedSchedule.r1)
+        print("Set relay 2:\t " + str(selectedSchedule.r2))
+        r2.setRelay(selectedSchedule.r2)
+        print("Set relay 3:\t " + str(selectedSchedule.r3))
+        r3.setRelay(selectedSchedule.r3)
+    else:
+        print("No schedule is active at this time.")
+        r1.setRelay(RelayPosition.OPEN)
+        r2.setRelay(RelayPosition.OPEN)
+        r3.setRelay(RelayPosition.OPEN)
+
+
+def testSchedules(schedules):
+    testTimes = []
+    for i in range(23):
+        testTimes.append(datetime.time(hour=i, minute=0))
+    
+    print("Test Schedules")
+    for testTime in testTimes:
+        print("Test Time:\t" + str(testTime))
+        for schedule in schedules:
+            schedule.setCurrentTime(testTime)
+            print("Interpreted Time:\t" + str(schedule.currentTime))
+            print("Schedule Name:\t" + schedule.scheduleName)
+            print(" Active:\t" + str(schedule.scheduleActive()))
+            
+            if schedule.scheduleActive():
+                selectedSchedule = schedule
+
+        if selectedSchedule is not None:
+            print("Selected schedule:\t" + selectedSchedule.scheduleName)
+            print("Set relay 1:\t " + str(selectedSchedule.r1))
+            #r1.setRelay(selectedSchedule.r1)
+            print("Set relay 2:\t " + str(selectedSchedule.r2))
+            #r2.setRelay(selectedSchedule.r2)
+            print("Set relay 3:\t " + str(selectedSchedule.r3))
+            #r3.setRelay(selectedSchedule.r3)
+        else:
+            print("No schedule is active at this time.")
+            #r1.setRelay(RelayPosition.OPEN)
+            #r2.setRelay(RelayPosition.OPEN)
+            #r3.setRelay(RelayPosition.OPEN)
+        print("")
+
+applySchedule(schedules)
