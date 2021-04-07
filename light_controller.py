@@ -17,11 +17,11 @@ class Relay:
         self.name = name
         self.gpioPin = gpioPin
         GPIO.setup(self.gpioPin, GPIO.OUT)
-        self.position = RelayPosition.OPEN
+        self.position = GPIO.input(self.gpioPin)
         
 
     def setRelay(self, position):
-        if position != self.position:
+        if position.value is not self.position:
             if position is RelayPosition.OPEN:
                 GPIO.output(self.gpioPin, GPIO.LOW)
             if position is RelayPosition.CLOSED:
