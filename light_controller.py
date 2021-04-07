@@ -1,6 +1,6 @@
 import datetime, enum, RPi.GPIO as GPIO
 
-#GPIO.setmode(GPIO.BCM) # GPIO Numbers instead of board numbers
+GPIO.setmode(GPIO.BCM) # GPIO Numbers instead of board numbers
 
 # Light controller operates in two modes. Day Mode and Night Mode.
 # Day Mode:
